@@ -1,0 +1,4 @@
+#Tue May 08 17:32:44 ICT 2018
+base.0=/Users/tui2tne/Documents/learn/contract-client/android/app/build/intermediates/transforms/dex/debug/folders/1000/1f/main
+renamed.0=classes.dex
+file.0=/Users/tui2tne/Documents/learn/contract-client/android/app/build/intermediates/transforms/dex/debug/folders/1000/1f/main/classes.dex

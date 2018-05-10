@@ -68,14 +68,14 @@ class RegisterScreen extends React.Component {
                             </View>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={this.goToRegisterScreen}>
+                        {/* <TouchableOpacity onPress={this.goToRegisterScreen}>
                             <View
                                 style={styles.loginButton}>
                                 <Text style={styles.loginButtonText}>
                                     Register
                                 </Text>
                             </View>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
             </KeyboardAvoidingView>
                 </ImageBackground>

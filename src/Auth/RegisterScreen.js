@@ -1,6 +1,22 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, StatusBar, Button, ImageBackground, Image, TextInput, KeyboardAvoidingView, Keyboard, Platform, TouchableOpacity } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View, ScrollView, StatusBar, Button, ImageBackground, Image, TextInput, KeyboardAvoidingView, Keyboard, Platform, TouchableOpacity } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
+import Stellar from '@pigzbe/react-native-stellar-sdk';
+import t  from 'tcomb-form-native';
+import * as Keychain from 'react-native-keychain';
+const Form = t.form.Form;
+import HttpClient from '../Utils/HttpClient'
+
+let RegisterForm = t.struct({
+    name: t.String,
+    email: t.String,
+    password: t.String
+});
+
+const formOptions = {
+    auto: 'placeholders',
+    stylesheet: formStyle
+}
 
 class RegisterScreen extends React.Component {
     constructor(props) {
@@ -8,17 +24,37 @@ class RegisterScreen extends React.Component {
 
         this.state = {
             keyboardAvoidingViewKey: 'keyboardAvoidingViewKey',
-            name: '',
-            email: '',
-            password: ''
+            value: {
+                name: 'Charuwit',
+                email: 'tui2tone@gmail.com',
+                password: 'coolpa',
+            },
+            isLoading: false
         };
 
+        this.onChange = this.onChange.bind(this)
         this.onSubmitForm = this.onSubmitForm.bind(this)
         this.goToLoginScreen = this.goToLoginScreen.bind(this)
     }
 
-    onSubmitForm() {
+    async onSubmitForm() {
+        console.log("submit")
+        if(!this.state.isLoading) {
 
+            const value = this.refs.form.getValue();
+            
+            if (value) {
+                try {
+                    await HttpClient.register(value.email, value.name, value.password)
+                } catch(error) {
+                    console.log(error)
+                }
+            }
+        }
+    }
+
+    onChange(value) {
+        this.setState({value});
     }
     
     goToLoginScreen() {
@@ -41,31 +77,16 @@ class RegisterScreen extends React.Component {
                     <View
                         width={140}
                         style={styles.formContainer}>
-                        <TextInput
-                            onChangeText={(text) => this.setState({email: text})}
-                            value={this.state.email}
-                            style={styles.formInput}
-                            placeholder={'Email'}
-                            textAlign={'center'}
-                            underlineColorAndroid={'transparent'}
-                        />
-                        <TextInput
-                            onChangeText={(text) => this.setState({name: text})}
-                            value={this.state.name}
-                            style={styles.formInput}
-                            placeholder={'Name'}
-                            textAlign={'center'}
-                            underlineColorAndroid={'transparent'}
-                        />
-                        <TextInput
-                            onChangeText={(text) => this.setState({password: text})}
-                            value={this.state.password}
-                            style={styles.formInput}
-                            placeholder={'Password'}
-                            textAlign={'center'}
-                            secureTextEntry={true}
-                            underlineColorAndroid={'transparent'}
-                        />
+                        <Form
+                            ref="form"
+                            type={RegisterForm}
+                            onChange={this.onChange}
+                            value={this.state.value}
+                            options={{
+                                auto: 'placeholders',
+                                stylesheet: formStyle
+                            }}
+                            />
 
                         <TouchableOpacity onPress={this.onSubmitForm}>
                             <View
@@ -76,14 +97,14 @@ class RegisterScreen extends React.Component {
                             </View>
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={this.goToLoginScreen}>
+                        {/* <TouchableOpacity onPress={this.goToLoginScreen}>
                             <View
                                 style={styles.loginButton}>
                                 <Text style={styles.loginButtonText}>
                                     Already have account? Login
                                 </Text>
                             </View>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
             </KeyboardAvoidingView>
                 </ImageBackground>
@@ -111,14 +132,6 @@ const styles = StyleSheet.create({
     logo: {
         marginBottom: 40
     },
-    formInput: {
-        backgroundColor: '#FFF',
-        borderRadius: 100,
-        padding: 10,
-        minWidth: 250,
-        borderEndWidth: 0,
-        marginBottom: 10
-    },
     submitButton: {
         backgroundColor: '#0CCE6B',
         borderRadius: 100,
@@ -141,5 +154,44 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     }
 });
+
+const formStyle = {
+    textbox: {
+        normal: {
+            backgroundColor: '#FFF',
+            borderRadius: 100,
+            padding: 10,
+            paddingLeft: 25,
+            paddingRight: 25,
+            minWidth: 250,
+            borderEndWidth: 0,
+            marginBottom: 10
+        }
+    },
+    controlLabel: {
+        normal: {
+        },
+        error: {
+        }
+    },
+    textboxView: {
+        normal: {},
+        error: {},
+        notEditable: {}
+    },
+    formGroup: {
+        normal: {
+        },
+        error: {
+        }
+    },
+    helpBlock: {
+        normal: {
+        },
+        error: {
+        }
+    },
+}
+
 
 export default RegisterScreen

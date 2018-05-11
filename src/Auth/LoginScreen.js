@@ -1,24 +1,52 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, StatusBar, Button, ImageBackground, Image, TextInput, KeyboardAvoidingView, Keyboard, Platform, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, Picker, View, ScrollView, StatusBar, Button, ImageBackground, Image, TextInput, KeyboardAvoidingView, Keyboard, Platform, TouchableOpacity } from 'react-native';
 import AutoHeightImage from 'react-native-auto-height-image';
+import SInfo from 'react-native-sensitive-info';
+import * as Keychain from 'react-native-keychain';
+import Aes from 'react-native-aes-crypto'
 
-class RegisterScreen extends React.Component {
+class LoginScreen extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
             keyboardAvoidingViewKey: 'keyboardAvoidingViewKey',
-            name: '',
             email: '',
-            password: ''
+            password: '',
+            accounts: []
         };
 
         this.onSubmitForm = this.onSubmitForm.bind(this)
         this.goToRegisterScreen = this.goToRegisterScreen.bind(this)
     }
 
-    onSubmitForm() {
+    async componentDidMount() {
+        const accountData = await SInfo.getItem('users', {})
+        const accounts = JSON.parse(accountData || "[]")
 
+        this.setState({
+            accounts,
+            email: accounts.length > 0 ? accounts[0] : ''
+        })
+    }
+
+    async onSubmitForm() {
+        try {
+            const { email, password } = this.state
+            console.log("email", email)
+            console.log("password", password)
+
+            const credentials = await Keychain.getGenericPassword({
+                service: email
+            });
+
+            console.log("credentials", credentials)
+            
+            var text = await Aes.decrypt(credentials.password, password, 'aes-256-ctr');
+            console.log(decrypt)
+        } catch(error) {
+            console.log(error)
+        }
     }
     
     goToRegisterScreen() {
@@ -26,6 +54,7 @@ class RegisterScreen extends React.Component {
     }
 
     render() {
+        const { accounts } = this.state
         return (
                 <ImageBackground source={require('../bg.png')} style={styles.container}>
                 <StatusBar
@@ -41,14 +70,22 @@ class RegisterScreen extends React.Component {
                     <View
                         width={140}
                         style={styles.formContainer}>
-                        <TextInput
-                            onChangeText={(text) => this.setState({email: text})}
-                            value={this.state.email}
-                            style={styles.formInput}
-                            placeholder={'Email'}
-                            textAlign={'center'}
-                            underlineColorAndroid={'transparent'}
-                        />
+                        <View
+                            width={250}
+                            style={styles.formPickerContainer}>
+                            <Picker
+                                selectedValue={this.state.email}
+                                style={styles.formPicker}
+                                onValueChange={(itemValue, itemIndex) => this.setState({email: itemValue})}>
+                                {
+                                    accounts.map((item, index) => {
+                                        return (
+                                            <Picker.Item label={item} value={item} key={item} />
+                                        )
+                                    })
+                                }
+                            </Picker>
+                        </View>
                         <TextInput
                             onChangeText={(text) => this.setState({password: text})}
                             value={this.state.password}
@@ -68,14 +105,14 @@ class RegisterScreen extends React.Component {
                             </View>
                         </TouchableOpacity>
 
-                        {/* <TouchableOpacity onPress={this.goToRegisterScreen}>
+                        <TouchableOpacity onPress={this.goToLoginScreen}>
                             <View
                                 style={styles.loginButton}>
                                 <Text style={styles.loginButtonText}>
                                     Register
                                 </Text>
                             </View>
-                        </TouchableOpacity> */}
+                        </TouchableOpacity>
                     </View>
             </KeyboardAvoidingView>
                 </ImageBackground>
@@ -111,6 +148,21 @@ const styles = StyleSheet.create({
         borderEndWidth: 0,
         marginBottom: 10
     },
+    formPickerContainer: {
+        backgroundColor: '#FFF',
+        borderRadius: 100,
+        paddingLeft: 20,
+        paddingRight: 20,
+        minWidth: 250,
+        borderEndWidth: 0,
+        marginBottom: 10
+    },
+    formPicker: {
+        padding: 10,
+        paddingLeft: 40,
+        minWidth: 230,
+        borderEndWidth: 0
+    },
     submitButton: {
         backgroundColor: '#0CCE6B',
         borderRadius: 100,
@@ -134,4 +186,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default RegisterScreen
+export default LoginScreen

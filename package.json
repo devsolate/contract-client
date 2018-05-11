@@ -6,11 +6,12 @@
     "babel-preset-react-native-stage-0": "^1.0.1",
     "jest": "^22.4.3",
     "jest-react-native": "^18.0.0",
-    "react-test-renderer": "16.3.1"
+    "react-test-renderer": "16.3.1",
+    "rn-nodeify": "tradle/rn-nodeify"
   },
   "scripts": {
     "start": "react-native start",
-    "android": "react-native run-android",
+    "android": "adb reverse tcp:8081 tcp:8081 && react-native run-android",
     "ios": "react-native run-ios",
     "test": "jest"
   },
@@ -19,17 +20,41 @@
   },
   "dependencies": {
     "@pigzbe/react-native-stellar-sdk": "^1.0.2",
+    "@tradle/react-native-http": "^2.0.0",
+    "assert": "^1.4.1",
     "axios": "^0.18.0",
+    "browserify-zlib": "^0.1.4",
+    "console-browserify": "^1.1.0",
+    "constants-browserify": "^1.0.0",
+    "dns.js": "^1.0.1",
+    "domain-browser": "^1.2.0",
+    "events": "^1.1.1",
+    "https-browserify": "0.0.1",
+    "path-browserify": "0.0.0",
+    "querystring-es3": "^0.2.1",
     "react": "16.3.1",
     "react-native": "~0.55.2",
+    "react-native-aes-crypto": "^1.2.1",
     "react-native-auto-height-image": "^1.0.0",
     "react-native-config": "^0.11.5",
     "react-native-dotenv": "^0.1.1",
     "react-native-keyboard-aware-scroll-view": "^0.5.0",
     "react-native-keychain": "^3.0.0-rc.3",
+    "react-native-level-fs": "^3.0.1",
     "react-native-node": "^3.3.1",
+    "react-native-os": "^1.2.1",
     "react-native-sensitive-info": "^5.1.0",
+    "react-native-tcp": "^3.3.0",
+    "react-native-udp": "^2.3.1",
     "react-navigation": "^2.0.0-rc.9",
-    "tcomb-form-native": "^0.6.11"
+    "readable-stream": "^1.0.33",
+    "rn-async-storage": "^1.0.23",
+    "stream-browserify": "^1.0.0",
+    "string_decoder": "^0.10.31",
+    "tcomb-form-native": "^0.6.11",
+    "timers-browserify": "^1.4.2",
+    "tty-browserify": "0.0.0",
+    "url": "^0.10.3",
+    "vm-browserify": "0.0.4"
   }
 }

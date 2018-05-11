@@ -1,11 +1,12 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, View, ScrollView, StatusBar, Button, ImageBackground, Image, TextInput, KeyboardAvoidingView, Keyboard, Platform, TouchableOpacity } from 'react-native';
+import SInfo from 'react-native-sensitive-info';
 import AutoHeightImage from 'react-native-auto-height-image';
 import Stellar from '@pigzbe/react-native-stellar-sdk';
 import t  from 'tcomb-form-native';
 import * as Keychain from 'react-native-keychain';
 const Form = t.form.Form;
-import HttpClient from '../Utils/HttpClient'
+import HttpClient from '../Utils/HttpClient';
 
 let RegisterForm = t.struct({
     name: t.String,
@@ -45,7 +46,29 @@ class RegisterScreen extends React.Component {
             
             if (value) {
                 try {
-                    await HttpClient.register(value.email, value.name, value.password)
+                    const result = await HttpClient.register(value.email, value.name, value.password)
+                    const encryptedSecretKey = result.encryptedSecretKey
+                    const email = result.user.email
+                    const name = result.user.name
+                    
+                    await Keychain.setGenericPassword(email, encryptedSecretKey, {
+                        service: email
+                    });
+                    const credentials = await Keychain.getGenericPassword({
+                        service: email
+                    });
+
+                    const accountListData = await SInfo.getItem('users', {})
+                    const accounts = JSON.parse(accountListData || "[]")
+                    
+                    if(accounts.indexOf(email) <= -1) {
+                        accounts.push(email)
+                    }
+
+                    SInfo.setItem('users', JSON.stringify(accounts), {});
+                    
+                    console.log("Register Success")
+                    this.props.navigation.navigate('Login')
                 } catch(error) {
                     console.log(error)
                 }

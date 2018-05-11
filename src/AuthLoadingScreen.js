@@ -1,5 +1,7 @@
 import React from 'react';
+import SInfo from 'react-native-sensitive-info';
 import { StyleSheet, Text, View, Button } from 'react-native';
+import * as Keychain from 'react-native-keychain';
 
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -11,8 +13,13 @@ class AuthLoadingScreen extends React.Component {
       }
     
       _bootstrapAsync = async () => {
-        await delay(2000)
-        this.props.navigation.navigate('Auth');
+        const accountData = await SInfo.getItem('users', {})
+        const accounts = JSON.parse(accountData || "[]")
+        if(accounts.length > 0) {
+            this.props.navigation.navigate('Login');
+        } else {
+            this.props.navigation.navigate('Register');
+        }
       };
 
     render() {
